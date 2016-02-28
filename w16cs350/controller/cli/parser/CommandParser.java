@@ -9,6 +9,8 @@ import w16cs350.controller.command.meta.*;
 import w16cs350.controller.command.behavioral.*;
 import w16cs350.controller.command.structural.*;
 import w16cs350.datatype.Angle;
+import w16cs350.controller.cli.*;
+import w16cs350.datatype.*;
 
 import java.util.*;
 
@@ -29,7 +31,7 @@ public class CommandParser
    {
       String[] commandArray = this.commandText.split("\\s+");
       String subCommand;
-      switch (commandArray[0]){
+      switch (commandArray[0].toUpperCase()){
          case "DO":
             subCommand = createSubCommand(commandArray);
             // this is where you would do this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
@@ -37,7 +39,7 @@ public class CommandParser
             break;
          case "CREATE":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
+            //this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
             A_Command commandCreational = createCreationalCommand(subCommand);
             break;
          case "@EXIT":
@@ -278,7 +280,166 @@ public class CommandParser
    private A_Command createCreationalCommand(String subCommand)
    {
       String[] commandArray = subCommand.split("\\s+");
-      return null;
+      A_Command command = null;
+      switch (commandArray[0].toUpperCase()){
+         case "POWER":
+            subCommand = createSubCommand(commandArray);
+            
+            command = createPowerCommand(subCommand);
+            break;
+         case "STOCK":
+            subCommand = createSubCommand(commandArray);
+            
+            command = createStockCommand(subCommand);
+            break;
+      }
+      return command;
+   }
+   
+   // creates a creational power command and returns it
+   private A_Command createPowerCommand(String subCommand)
+   {
+      String[] commandArray = subCommand.split("[()]");
+      StringBuilder strBuild = new StringBuilder();
+      for(int i = 0; i < commandArray.length; i++)
+      {
+         strBuild.append(commandArray[i]);
+         if(i < commandArray.length-1)
+             strBuild.append(" ");
+      }
+      subCommand = strBuild.toString();
+      commandArray = subCommand.split("\\s+");
+      A_Command command = null;
+      switch (commandArray[0].toUpperCase()){
+        case "CATENARY":
+           List<String> poles = new ArrayList<String>();
+           for(int i = 4; i < commandArray.length; i++)
+           {
+               poles.add(commandArray[i]);
+           }
+           command = new CommandCreatePowerCatenary(commandArray[1], poles);
+           break;
+        case "POLE":
+           boolean isFromStart = true;
+           switch (commandArray[8].toUpperCase()){
+               case "START":
+                 isFromStart = true;
+                 break;
+               case "END":
+                 isFromStart = false;
+           }
+           TrackLocator trLoc = new TrackLocator(commandArray[4], Double.parseDouble(commandArray[6]), isFromStart);
+           command = new CommandCreatePowerPole(commandArray[2], trLoc);
+           break;
+        case "STATION":
+           command = createCommandStation(subCommand);
+           break;
+        case "SUBSTATION":
+           command = createCommandSubStation(subCommand);
+           break;
+      }
+      return command;
+   }
+   
+   // creates a station and returns it
+   private A_Command createCommandStation(String subCommand)
+   {
+      String[] commandArray = subCommand.split("\\s+");
+      A_Command command = null;
+      Latitude lat = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[5]), Double.parseDouble(commandArray[7]));
+      Longitude lon = new Longitude(Integer.parseInt(commandArray[10]), Integer.parseInt(commandArray[12]), Double.parseDouble(commandArray[14]));
+      CoordinatesWorld ref = new CoordinatesWorld(lat, lon);
+      CoordinatesDelta del = new CoordinatesDelta(Integer.parseInt(commandArray[17]), Integer.parseInt(commandArray[19]));
+      List<String> poles = new ArrayList<String>();
+      for(int i = 22; i < commandArray.length; i++)
+      {
+          poles.add(commandArray[i]);
+      }
+      command = new CommandCreatePowerStation(commandArray[1], ref, del, poles);
+      return command;
+   }
+   
+   // creates a substation and returns it
+   private A_Command createCommandSubStation(String subCommand)
+   {
+      String[] commandArray = subCommand.split("\\s+");
+      A_Command command = null;
+      Latitude lat = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[5]), Double.parseDouble(commandArray[7]));
+      Longitude lon = new Longitude(Integer.parseInt(commandArray[10]), Integer.parseInt(commandArray[12]), Double.parseDouble(commandArray[14]));
+      CoordinatesWorld ref = new CoordinatesWorld(lat, lon);
+      CoordinatesDelta del = new CoordinatesDelta(Integer.parseInt(commandArray[17]), Integer.parseInt(commandArray[19]));
+      List<String> catenaries = new ArrayList<String>();
+      for(int i = 22; i < commandArray.length; i++)
+      {
+          catenaries.add(commandArray[i]);
+      }
+      command = new CommandCreatePowerSubstation(commandArray[1], ref, del, catenaries);
+      return command;
+   }
+
+
+   // creates creational stock command and returns it
+   private A_Command createStockCommand(String subCommand)
+   {
+      String[] commandArray = subCommand.split("\\s+");
+      A_Command command = null;
+      if(commandArray[0].toUpperCase().equals("ENGINE"))
+      {
+            commandArray = subCommand.split("[()]");
+            StringBuilder strBuild = new StringBuilder();
+            for(int i = 0; i < commandArray.length; i++)
+            {
+                strBuild.append(commandArray[i]);
+                if(i < commandArray.length-1)
+                     strBuild.append(" ");
+            }
+            subCommand = strBuild.toString();
+            commandArray = subCommand.split("\\s+");
+            boolean isFromStart = true, isFacing = true;
+            switch (commandArray[10].toUpperCase()){
+                case "START":
+                  isFromStart = true;
+                  break;
+                case "END":
+                  isFromStart = false;
+            }
+            switch (commandArray[12].toUpperCase()){
+                case "START":
+                  isFacing = true;
+                  break;
+                case "END":
+                  isFacing = false;
+            }
+            TrackLocator trLoc = new TrackLocator(commandArray[6], Double.parseDouble(commandArray[8]), isFromStart);
+            command = new CommandCreateStockEngineDiesel(commandArray[1], trLoc, isFacing);
+      }
+      else
+      {
+         subCommand = createSubCommand(commandArray);
+         commandArray = subCommand.split("\\s+");
+         
+         switch (commandArray[commandArray.length-1].toUpperCase()){
+            case "BOX":
+               command = new CommandCreateStockCarBox(commandArray[0]);            
+               break;
+            case "CABOOSE":
+               command = new CommandCreateStockCarCaboose(commandArray[0]);
+               break;
+            case "FLATBED":
+               command = new CommandCreateStockCarFlatbed(commandArray[0]);
+               break;
+            case "PASSENGER":
+               command = new CommandCreateStockCarPassenger(commandArray[0]);
+               break;
+            case "TANK":
+               command = new CommandCreateStockCarTank(commandArray[0]);
+               break;
+            case "TENDER":
+               command = new CommandCreateStockCarTender(commandArray[0]);
+               break;   
+         }
+      }
+      return command;
    }
    
    // creates and returns CommandMetaDoMetaExit()
