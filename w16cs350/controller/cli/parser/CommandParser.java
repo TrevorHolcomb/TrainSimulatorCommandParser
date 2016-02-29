@@ -135,7 +135,7 @@ public class CommandParser
       	case "SELECT":
       		command = createBehavioralCommandSelect(subCommand);
       		break;
-      	case "SET"://TODO:
+      	case "SET":
       		command = createBehavioralCommandSet(subCommand);
       		break;
       	default:
