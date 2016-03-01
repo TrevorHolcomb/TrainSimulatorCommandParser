@@ -628,30 +628,45 @@ private A_Command createBridgeCommand(String command) {
       return null;
    }
    
-   // creates and returns CommandStructuralCommit
+   /* @Author Marco Karier
+    * creates and returns CommandStructuralCommit
+    */
    private A_Command createStructuralCommit()
    {
       return new CommandStructuralCommit();
-   }
+   }//end of createStructuralCommit
    
-   // returns a CommandStructuralCouple command
+   /* @Author Marco Karier
+    * @Param takes in a substring that holds the ids from couple.
+    *  returns a CommandStructuralCouple command
+    */
    private A_Command createStructuralCouple(String subCommand)
    {
       String[] commandArray = subCommand.split("\\s+");
-      return null;
-   }
+      return new CommandStructuralCouple(commandArray[1], commandArray[3]);
+   }//end of craeteStructuralCouple
    
-   // returns a CommandStructuralLocate command
+   /* @Author Marco Karier
+    * @Param takes in a substring that holds the id on track and distance from either start or end.
+    *  returns a CommandStructuralLocate command
+    */
    private A_Command createStructuralLocate(String subCommand)
    {
       String[] commandArray = subCommand.split("\\s+");
-      return null;
+      String id1 = commandArray[1];
+      String id2 = commandArray[4];
+      double distance = Double.parseDouble(commandArray[6]);
+      String from = commandArray[8];
+      return new CommandStructuralLocate(id1, new TrackLocator(id2, distance, from.equals("START")));
    }
    
-   // returns a CommandStructuralUncouple command
+   /* @Author Marco Karier
+    * @Param A substring command that contain a uncouple command from id1 and id2
+    *  returns a CommandStructuralUncouple command
+    */
    private A_Command createStructuralUncouple(String subCommand)
    {
       String[] commandArray = subCommand.split("\\s+");
-      return null;
-   }
+      return new CommandStructuralUncouple(commandArray[1], commandArray[3]);
+   }//end of createStructuralUncouple
 }
