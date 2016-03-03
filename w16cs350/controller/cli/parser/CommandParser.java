@@ -453,6 +453,20 @@ public class CommandParser
 	   CoordinatesDelta coord= new CoordinatesDelta(x, y);
 	   return coord;
    }
+   
+   private CoordinatesDelta calcOrigin(CoordinatesDelta start, CoordinatesDelta end, double height){
+	   double startX = start.getX();
+	   double startY = start.getY();
+	   double endX = end.getX();
+	   double endY = end.getY();
+	   double midpointX = (startX + endX) / 2;
+	   double midpointY = (startY + endY) / 2;
+	   double distance = start.calculateDistance(end);
+	   double originX = midpointX + (height * ((startY - endY) / distance));
+	   double originY = midpointY + (height * ((endX - startX) / distance));
+	   CoordinatesDelta origin = new CoordinatesDelta(originX, originY);
+	   return origin;
+   }
     
 	/*
 	 * further brakes down the create track and returns specified command, if it
@@ -626,11 +640,12 @@ public class CommandParser
 			CoordinatesDelta wyeDeltaStart = processDelta(commandArray, 6 + index);
 			CoordinatesDelta wyeDeltaEnd = processDelta(commandArray, 10 + index);
 			double distance1 = Double.parseDouble(commandArray[15 + index]);
+			CoordinatesDelta originWye = calcOrigin(wyeDeltaStart, wyeDeltaEnd, distance1);
 			CoordinatesDelta wyeDeltaStart2 = processDelta(commandArray, 18 + index);
 			CoordinatesDelta wyeDeltaEnd2 = processDelta(commandArray, 22 + index);
 			double distance2 = Double.parseDouble(commandArray[15 + index]);
-
-			break;
+			CoordinatesDelta originWye2 = calcOrigin(wyeDeltaStart2, wyeDeltaEnd2, distance2);
+			commandType = new CommandCreateTrackSwitchWye(id, worldCoor, wyeDeltaStart, wyeDeltaEnd, originWye, wyeDeltaStart2, wyeDeltaEnd2, originWye2);
 
 		case "TURNOUT":
 			CoordinatesDelta deltaStart = processDelta(commandArray, 7 + index);
@@ -638,11 +653,9 @@ public class CommandParser
 			CoordinatesDelta curveStart = processDelta(commandArray, 17 + index);
 			CoordinatesDelta curveEnd =  processDelta(commandArray, 21 + index);
 			double distance = Double.parseDouble(commandArray[26 + index]);
-			
-			  /*ShapeArc curve = new ShapeArc(worldCoor, curveStart, curveEnd, distance); 
-			  CoordinatesDelta origin = curve.getDeltaOrigin();
-			  commandType = new CommandCreateTrackSwitchTurnout(id, worldCoor, deltaStart, deltaEnd, 
-					  											curveStart, curveEnd, origin);*/
+			CoordinatesDelta originTurnout = calcOrigin(curveStart, curveEnd, distance);
+			commandType = new CommandCreateTrackSwitchTurnout(id, worldCoor, deltaStart, deltaEnd, 
+					  											curveStart, curveEnd, originTurnout);
 			 
 			break;
 		}
