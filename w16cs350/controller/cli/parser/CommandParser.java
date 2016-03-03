@@ -18,6 +18,7 @@ public class CommandParser
 {
    //private A_ParserHelper parserHelper;
    private String commandText;
+   private double time;
 
    public CommandParser(String commandText)
    {
@@ -31,9 +32,29 @@ public class CommandParser
    {
       String[] commandArray = this.commandText.split("\\s+");
       String subCommand;
+      boolean scheduleFlag = false;
+      
+      /* 
+       * If it is a schedule command then set trigger time and flag to true
+       * updates the commandArray to include only the command to input
+       */
+      
+      if(commandArray[0].toUpperCase().equals("@SCHEDULE")){
+    	  scheduleFlag = true;
+    	  time = Double.parseDouble(commandArray[2]);
+    	  commandArray = createScheduleCommand(commandArray);
+      }
+      
+      for(String s : commandArray){
+    	  System.out.println(s);
+      }
+      
       switch (commandArray[0].toUpperCase()){
          case "DO":
-            subCommand = createSubCommand(commandArray);
+        	 subCommand = createSubCommand(commandArray);
+        	 if(scheduleFlag){
+        		 A_Command commandBehavioral = createBehavioralCommand(subCommand);
+        	 }
             // this is where you would do this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
             A_Command commandBehavioral = createBehavioralCommand(subCommand);
             break;
@@ -51,15 +72,28 @@ public class CommandParser
             // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
             A_Command commandMetaRun = createMetaRunCommand(subCommand);
             break;
-         case "@SCHEDULE":
+         /*case "@SCHEDULE":
             subCommand = createSubCommand(commandArray);
             // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand));
             A_Command commandMetaSchedule = createMetaSchedule(subCommand);
-            break;
+            break;*/
          case "OPEN":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
-            A_Command commandMetaView = createMetaView(subCommand);
+            /*
+             * if the schedule flag is on then create an command and pass the the scheduler
+             */
+            if(scheduleFlag){
+       		 	A_Command commandMetaView = createMetaView(subCommand);
+       		 	//this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand))
+       		 	A_Command commandMetaSchedule = createMetaSchedule(commandMetaView);
+       	 	}
+            /*
+             * else run the standard command
+             */
+            else{
+	            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
+	            A_Command commandMetaView = createMetaView(subCommand);
+            }    
             break;
          case "CLOSE":
             subCommand = createSubCommand(commandArray);
@@ -86,8 +120,10 @@ public class CommandParser
             A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
             break;
          case "USE":
+        	 subCommand = createSubCommand(commandArray);
             // need to have the parserHelper in order to add a reference
             // this will be completed later
+        	 setCoordinatesWorldReference(subCommand);
             break;
          default:
             throw new IllegalArgumentException("Invalid Command");
@@ -107,6 +143,17 @@ public class CommandParser
       }
       return subCommand.toString();
    }  
+   
+   private String[] createScheduleCommand(String[] commandArray)
+   {
+      String[] temp = new String[commandArray.length - 3];
+      int i, k;
+      for( i = 0, k = 3; i < temp.length; i++, k++)
+      {
+         temp[i] = commandArray[k];
+      }
+      return temp;
+   } 
    
    /*public A_ParserHelper getParserHelper()
    {
@@ -474,7 +521,7 @@ public class CommandParser
 	 */
 
 	private A_Command createTrackCommand(String command) {
-		String[] commandArray = command.split("\\s+");
+		String[] commandArray = command.split("[*'\"\\s]+");
 		A_Command commandType = null;
 		String first = commandArray[0].toUpperCase();
 
@@ -488,10 +535,10 @@ public class CommandParser
 		CoordinatesWorld worldCoor = null;
 		
 		if(commandArray[3].charAt(0) != '$'){
-			Latitude latitude = new Latitude(Double.parseDouble(commandArray[3]));
-			Longitude longitude = new Longitude(Double.parseDouble(commandArray[5]));
+			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
 			worldCoor = new CoordinatesWorld(latitude, longitude);
-			i = 2;
+			i = 6;
 		}	
 		
 		else{
@@ -572,15 +619,10 @@ public class CommandParser
 	}
 
 	private A_Command createBridgeCommand(String command) {
-		String[] commandArray = command.split("\\s+");
+		String[] commandArray = command.split("[*'\"\\s]+");
 		A_Command commandType = null;
 		String id;
 		int index = 0;
-		int i = 0;
-		for(String s : commandArray){
-			System.out.println(i + ". " + s);
-			i++;
-		}
 		boolean isDraw = commandArray[0].toUpperCase().equals("DRAW");
 		if (!isDraw) {
 			index--;
@@ -590,10 +632,10 @@ public class CommandParser
 		CoordinatesWorld worldCoor = null;
 		
 		if(commandArray[3].charAt(0) != '$'){
-			Latitude latitude = new Latitude(Double.parseDouble(commandArray[3 + index]));
-			Longitude longitude = new Longitude(Double.parseDouble(commandArray[5 + index]));
+			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
 			worldCoor = new CoordinatesWorld(latitude, longitude);
-			index +=2;
+			index += 6;
 		}
 		
 		else{
@@ -616,7 +658,7 @@ public class CommandParser
 	}
 
 	private A_Command createSwitchCommand(String command) {
-		String[] commandArray = command.split("\\s+");
+		String[] commandArray = command.split("[*'\"\\s]+");
 		
 		int index = 0;
 		A_Command commandType = null;
@@ -625,10 +667,10 @@ public class CommandParser
 		
 		CoordinatesWorld  worldCoor = null;
 		if(commandArray[3].charAt(0) != '$'){
-			Latitude latitude = new Latitude(Double.parseDouble(commandArray[3]));
-			Longitude longitude = new Longitude(Double.parseDouble(commandArray[5]));
-		    worldCoor = new CoordinatesWorld(latitude, longitude);
-			index = 2;
+			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
+			worldCoor = new CoordinatesWorld(latitude, longitude);
+			index = 6;
 		}	
 		
 		else{
@@ -663,17 +705,17 @@ public class CommandParser
 	}
 	
 	private A_Command createRoundhouseCommand(String command) {
-		String[] commandArray = command.split("\\s+");
+		String[] commandArray = command.split("[*'\"\\s]+");
 		A_Command commandType = null;
 		int i = 0;
 		CoordinatesWorld worldCoor = null;
 		String id = commandArray[0];
 		
 		if(commandArray[2].charAt(0) != '$'){
-			Latitude latitude = new Latitude(Double.parseDouble(commandArray[2]));
-			Longitude longitude = new Longitude(Double.parseDouble(commandArray[4]));
+			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
 			worldCoor = new CoordinatesWorld(latitude, longitude);
-			i = 2;
+			i = 6;
 		}
 		
 		else{
@@ -711,24 +753,29 @@ public class CommandParser
 	}
 
 	// returns a CommandMetaDoMetaSchedule command
-	private A_Command createMetaSchedule(String subCommand) {
-		String[] commandArray = subCommand.split("\\s+");
-		return null;
+	private A_Command createMetaSchedule(A_Command command) {
+		A_Command schedule = new CommandMetaDoSchedule(this.time, command);
+		return schedule;
 	}
 
 	// returns a CommandMetaViewGenerate command
 	private A_Command createMetaView(String subCommand) {
-		String[] commandArray = subCommand.split("\\s+");
+		String[] commandArray = subCommand.split("[*'\"\\s]+");
 		String id = commandArray[1];
 		int i = 0;
+		int ix = 0;
+		for(String s : commandArray){
+			System.out.println(ix + ". " + s);
+			ix++;
+		}
 		CoordinatesWorld origin = null;
 		A_Command command = null;
 		
 		if (commandArray[3].charAt(0) != '$') {
-			Latitude latitude = new Latitude(Double.parseDouble(commandArray[3]));
-			Longitude longitude = new Longitude(Double.parseDouble(commandArray[5]));
+			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
 			origin = new CoordinatesWorld(latitude, longitude);
-			i = 2;
+			i = 6;
 		}
 		else{
 			//origin = this.parserHelper.getReference(commandArray[3]);
