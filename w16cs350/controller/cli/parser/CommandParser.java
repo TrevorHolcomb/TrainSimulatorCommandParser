@@ -403,7 +403,25 @@ public class CommandParser
 	   String[] commandArray = subCommand.split("\\s+");
 	      String id = commandArray[1];
 	      A_Command command = null;
-	      CoordinatesWorld ref = getCoordWorld(subCommand);
+      int hasRef = subCommand.indexOf('$');
+      CoordinatesWorld ref = null;
+      if(hasRef > 0)
+      {
+         String reference = subCommand.substring(hasRef+1, subCommand.length());
+        
+            
+         String [] myRef = reference.split("\\s+");
+         String refId;
+         if(myRef[0].equals(""))
+            refId = myRef[1];
+         else
+            refId = myRef[0];
+         ref = this.parserHelper.getReference(refId);
+      }
+      else
+      {
+	         ref = getCoordWorld(subCommand);
+      }
 	      CoordinatesDelta del = getCoordDel(subCommand);
 	      List<String> poles = new ArrayList<String>();
 	      subCommand = subCommand.toLowerCase();
@@ -426,6 +444,7 @@ public class CommandParser
 	      }
 	      command = new CommandCreatePowerStation(id, ref, del, poles);
 	      return command;
+
    }
    
    // creates a substation and returns it
@@ -434,7 +453,25 @@ public class CommandParser
 	   String[] commandArray = subCommand.split("\\s+");
 	      A_Command command = null;
 	      String id = commandArray[1];
-	      CoordinatesWorld ref = getCoordWorld(subCommand);
+      int hasRef = subCommand.indexOf('$');
+      CoordinatesWorld ref = null;
+      if(hasRef > 0)
+      {
+         String reference = subCommand.substring(hasRef+1, subCommand.length());
+        
+            
+         String [] myRef = reference.split("\\s+");
+         String refId;
+         if(myRef[0].equals(""))
+            refId = myRef[1];
+         else
+            refId = myRef[0];
+         ref = this.parserHelper.getReference(refId);
+      }
+      else
+      {
+	         ref = getCoordWorld(subCommand);
+      }
 	      CoordinatesDelta del = getCoordDel(subCommand);
 	      List<String> catenaries = new ArrayList<String>();
 	      subCommand = subCommand.toLowerCase();
@@ -447,6 +484,7 @@ public class CommandParser
 	      }
 	      command = new CommandCreatePowerSubstation(id, ref, del, catenaries);
 	      return command;
+
    }
 
 
