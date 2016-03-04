@@ -57,22 +57,22 @@ public class CommandParser
            	 if(scheduleFlag){
            		 A_Command commandBehavioral = createBehavioralCommand(subCommand);
            	 }
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
-               A_Command commandBehavioral = createBehavioralCommand(subCommand);
+               this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
+               //A_Command commandBehavioral = createBehavioralCommand(subCommand);
                break;
             case "CREATE":
                subCommand = createSubCommand(commandArray);
-               //this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
-               A_Command commandCreational = createCreationalCommand(subCommand);
+               this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
+               //A_Command commandCreational = createCreationalCommand(subCommand);
                break;
             case "@EXIT":
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createExitCommand());
-               A_Command commandExit = createExitCommand();
+               this.parserHelper.getActionProcessor().schedule(createExitCommand());
+               //A_Command commandExit = createExitCommand();
                break;
             case "@RUN":
                subCommand = createSubCommand(commandArray);
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
-               A_Command commandMetaRun = createMetaRunCommand(subCommand);
+               this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
+               //A_Command commandMetaRun = createMetaRunCommand(subCommand);
                break;
             /*case "@SCHEDULE":
                subCommand = createSubCommand(commandArray);
@@ -93,33 +93,33 @@ public class CommandParser
                 * else run the standard command
                 */
                else{
-   	            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
-   	            A_Command commandMetaView = createMetaView(subCommand);
+   	            this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
+   	            //A_Command commandMetaView = createMetaView(subCommand);
                }    
                break;
             case "CLOSE":
                subCommand = createSubCommand(commandArray);
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
-               A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
+               this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
+               //A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
                break;
             case "COMMIT":
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
-               A_Command commandStructuralCommit = createStructuralCommit();
+               this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
+               //A_Command commandStructuralCommit = createStructuralCommit();
                break;
             case "COUPLE":
                subCommand = createSubCommand(commandArray);
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
-               A_Command commandStructuralCouple = createStructuralCouple(subCommand);
+               this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
+               //A_Command commandStructuralCouple = createStructuralCouple(subCommand);
                break;
             case "LOCATE":
                subCommand = createSubCommand(commandArray);
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
-               A_Command commandStructuralLocate = createStructuralLocate(subCommand);
+               this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
+               //A_Command commandStructuralLocate = createStructuralLocate(subCommand);
                break;
             case "UNCOUPLE":
                subCommand = createSubCommand(commandArray);
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
-               A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
+               this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
+               //A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
                break;
             case "USE":
            	 subCommand = createSubCommand(commandArray);
