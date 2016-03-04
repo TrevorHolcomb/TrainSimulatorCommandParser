@@ -396,37 +396,53 @@ public class CommandParser
    // creates a station and returns it
    private A_Command createCommandStation(String subCommand)
    {
-      String[] commandArray = subCommand.split("\\s+");
-      A_Command command = null;
-      Latitude lat = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[5]), Double.parseDouble(commandArray[7]));
-      Longitude lon = new Longitude(Integer.parseInt(commandArray[10]), Integer.parseInt(commandArray[12]), Double.parseDouble(commandArray[14]));
-      CoordinatesWorld ref = new CoordinatesWorld(lat, lon);
-      CoordinatesDelta del = new CoordinatesDelta(Integer.parseInt(commandArray[17]), Integer.parseInt(commandArray[19]));
-      List<String> poles = new ArrayList<String>();
-      for(int i = 22; i < commandArray.length; i++)
-      {
-          poles.add(commandArray[i]);
-      }
-      command = new CommandCreatePowerStation(commandArray[1], ref, del, poles);
-      return command;
+	   String[] commandArray = subCommand.split("\\s+");
+	      String id = commandArray[1];
+	      A_Command command = null;
+	      CoordinatesWorld ref = getCoordWorld(subCommand);
+	      CoordinatesDelta del = getCoordDel(subCommand);
+	      List<String> poles = new ArrayList<String>();
+	      subCommand = subCommand.toLowerCase();
+	      int statIndex = subCommand.indexOf("with");
+	      String stationCheck = subCommand.substring(statIndex, subCommand.length());
+	      statIndex = stationCheck.indexOf("substations") + 12;
+	      if(statIndex < 12)
+	      {
+	         statIndex = stationCheck.indexOf("substation") + 11;
+	      }
+	      subCommand = stationCheck.substring(statIndex, stationCheck.length());
+	      while(subCommand.substring(0,1).equals(" "))
+	      {
+	          subCommand = subCommand.substring(1, subCommand.length());
+	      }
+	      commandArray = subCommand.split("\\s+");
+	      for(int i = 0; i < commandArray.length; i++)
+	      {
+	          poles.add(commandArray[i]);
+	      }
+	      command = new CommandCreatePowerStation(id, ref, del, poles);
+	      return command;
    }
    
    // creates a substation and returns it
    private A_Command createCommandSubStation(String subCommand)
    {
-      String[] commandArray = subCommand.split("\\s+");
-      A_Command command = null;
-      Latitude lat = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[5]), Double.parseDouble(commandArray[7]));
-      Longitude lon = new Longitude(Integer.parseInt(commandArray[10]), Integer.parseInt(commandArray[12]), Double.parseDouble(commandArray[14]));
-      CoordinatesWorld ref = new CoordinatesWorld(lat, lon);
-      CoordinatesDelta del = new CoordinatesDelta(Integer.parseInt(commandArray[17]), Integer.parseInt(commandArray[19]));
-      List<String> catenaries = new ArrayList<String>();
-      for(int i = 22; i < commandArray.length; i++)
-      {
-          catenaries.add(commandArray[i]);
-      }
-      command = new CommandCreatePowerSubstation(commandArray[1], ref, del, catenaries);
-      return command;
+	   String[] commandArray = subCommand.split("\\s+");
+	      A_Command command = null;
+	      String id = commandArray[1];
+	      CoordinatesWorld ref = getCoordWorld(subCommand);
+	      CoordinatesDelta del = getCoordDel(subCommand);
+	      List<String> catenaries = new ArrayList<String>();
+	      subCommand = subCommand.toLowerCase();
+	      int cantIndex = subCommand.indexOf("catenaries")+ 11;
+	      subCommand = subCommand.substring(cantIndex, subCommand.length()-1);
+	      commandArray = subCommand.split("\\s+");
+	      for(int i = 0; i < commandArray.length; i++)
+	      {
+	          catenaries.add(commandArray[i]);
+	      }
+	      command = new CommandCreatePowerSubstation(id, ref, del, catenaries);
+	      return command;
    }
 
 
