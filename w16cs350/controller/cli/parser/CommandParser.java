@@ -16,14 +16,14 @@ import java.util.*;
 
 public class CommandParser
 {
-   //private A_ParserHelper parserHelper;
+   private A_ParserHelper parserHelper;
    private String commandText;
 
-   public CommandParser(String commandText)
+   public CommandParser(MyParserHelper parserHelper, String commandText)
    {
       // I took out the parserHelper for the time being so
       // that we can actually test our strings by only passing through a string
-      //this.parserHelper = parserHelper;
+      this.parserHelper = parserHelper;
       this.commandText = commandText;
    }
    
@@ -34,56 +34,56 @@ public class CommandParser
       switch (commandArray[0].toUpperCase()){
          case "DO":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
-            A_Command commandBehavioral = createBehavioralCommand(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
+            //A_Command commandBehavioral = createBehavioralCommand(subCommand);
             break;
          case "CREATE":
             subCommand = createSubCommand(commandArray);
-            //this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
-            A_Command commandCreational = createCreationalCommand(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
+            //A_Command commandCreational = createCreationalCommand(subCommand);
             break;
          case "@EXIT":
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createExitCommand());
-            A_Command commandExit = createExitCommand();
+            this.parserHelper.getActionProcessor().schedule(createExitCommand());
+           //A_Command commandExit = createExitCommand();
             break;
          case "@RUN":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
-            A_Command commandMetaRun = createMetaRunCommand(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
+            //A_Command commandMetaRun = createMetaRunCommand(subCommand);
             break;
          case "@SCHEDULE":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand));
-            A_Command commandMetaSchedule = createMetaSchedule(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand));
+           // A_Command commandMetaSchedule = createMetaSchedule(subCommand);
             break;
          case "OPEN":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
-            A_Command commandMetaView = createMetaView(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
+           // A_Command commandMetaView = createMetaView(subCommand);
             break;
          case "CLOSE":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
-            A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
+           // A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
             break;
          case "COMMIT":
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
-            A_Command commandStructuralCommit = createStructuralCommit();
+            this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
+            //A_Command commandStructuralCommit = createStructuralCommit();
             break;
          case "COUPLE":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
-            A_Command commandStructuralCouple = createStructuralCouple(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
+            //A_Command commandStructuralCouple = createStructuralCouple(subCommand);
             break;
          case "LOCATE":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
-            A_Command commandStructuralLocate = createStructuralLocate(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
+            //A_Command commandStructuralLocate = createStructuralLocate(subCommand);
             break;
          case "UNCOUPLE":
             subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
-            A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
+            this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
+            //A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
             break;
          case "USE":
             // need to have the parserHelper in order to add a reference
@@ -108,10 +108,10 @@ public class CommandParser
       return subCommand.toString();
    }  
    
-   /*public A_ParserHelper getParserHelper()
+   public A_ParserHelper getParserHelper()
    {
       return this.parserHelper;
-   }*/
+   }
    
    public String getCommandText()
    {
@@ -350,36 +350,148 @@ public class CommandParser
    private A_Command createCommandStation(String subCommand)
    {
       String[] commandArray = subCommand.split("\\s+");
+      String id = commandArray[1];
       A_Command command = null;
-      Latitude lat = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[5]), Double.parseDouble(commandArray[7]));
-      Longitude lon = new Longitude(Integer.parseInt(commandArray[10]), Integer.parseInt(commandArray[12]), Double.parseDouble(commandArray[14]));
-      CoordinatesWorld ref = new CoordinatesWorld(lat, lon);
-      CoordinatesDelta del = new CoordinatesDelta(Integer.parseInt(commandArray[17]), Integer.parseInt(commandArray[19]));
+      CoordinatesWorld ref = getCoordWorld(subCommand);
+      CoordinatesDelta del = getCoordDel(subCommand);
       List<String> poles = new ArrayList<String>();
-      for(int i = 22; i < commandArray.length; i++)
+      subCommand = subCommand.toLowerCase();
+      int statIndex = subCommand.indexOf("with");
+      String stationCheck = subCommand.substring(statIndex, subCommand.length());
+      statIndex = stationCheck.indexOf("substations") + 12;
+      if(statIndex < 12)
+      {
+         statIndex = stationCheck.indexOf("substation") + 11;
+      }
+      subCommand = stationCheck.substring(statIndex, stationCheck.length());
+      while(subCommand.substring(0,1).equals(" "))
+      {
+          subCommand = subCommand.substring(1, subCommand.length());
+      }
+      commandArray = subCommand.split("\\s+");
+      for(int i = 0; i < commandArray.length; i++)
       {
           poles.add(commandArray[i]);
       }
-      command = new CommandCreatePowerStation(commandArray[1], ref, del, poles);
+      command = new CommandCreatePowerStation(id, ref, del, poles);
       return command;
    }
+   
    
    // creates a substation and returns it
    private A_Command createCommandSubStation(String subCommand)
    {
       String[] commandArray = subCommand.split("\\s+");
       A_Command command = null;
-      Latitude lat = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[5]), Double.parseDouble(commandArray[7]));
-      Longitude lon = new Longitude(Integer.parseInt(commandArray[10]), Integer.parseInt(commandArray[12]), Double.parseDouble(commandArray[14]));
-      CoordinatesWorld ref = new CoordinatesWorld(lat, lon);
-      CoordinatesDelta del = new CoordinatesDelta(Integer.parseInt(commandArray[17]), Integer.parseInt(commandArray[19]));
+      String id = commandArray[1];
+      CoordinatesWorld ref = getCoordWorld(subCommand);
+      CoordinatesDelta del = getCoordDel(subCommand);
       List<String> catenaries = new ArrayList<String>();
-      for(int i = 22; i < commandArray.length; i++)
+      subCommand = subCommand.toLowerCase();
+      int cantIndex = subCommand.indexOf("catenaries")+ 11;
+      subCommand = subCommand.substring(cantIndex, subCommand.length()-1);
+      commandArray = subCommand.split("\\s+");
+      for(int i = 0; i < commandArray.length; i++)
       {
           catenaries.add(commandArray[i]);
       }
-      command = new CommandCreatePowerSubstation(commandArray[1], ref, del, catenaries);
+      command = new CommandCreatePowerSubstation(id, ref, del, catenaries);
       return command;
+   }
+   
+   // splits the numbers into a coordinateDelta and returns it
+   private CoordinatesDelta getCoordDel(String subCommand)
+   {
+      String[] commandArray = subCommand.split("\\s+");
+      subCommand = subCommand.toLowerCase();
+      int deltaIndex = subCommand.indexOf("delta")+6;
+      subCommand = subCommand.substring(deltaIndex, subCommand.length()-1);
+      int colonIndex = subCommand.indexOf(':');
+      String [] tempCommand = subCommand.substring(0, colonIndex).split("\\s+");
+      int x = Integer.parseInt(tempCommand[0]);
+      int withIndex = subCommand.indexOf("with")-1;
+      tempCommand = subCommand.substring(colonIndex+1, withIndex).split("\\s+");
+      int y;
+      if(tempCommand[0].equals(""))
+      {
+         y = Integer.parseInt(tempCommand[1]);
+      }
+      else
+      {
+         y = Integer.parseInt(tempCommand[0]);
+      }
+      return new CoordinatesDelta(x, y);
+     
+   }
+   
+   // splits on the diferent ways lon and lat can come in and returns a coordinatesWorld
+   private CoordinatesWorld getCoordWorld(String subCommand)
+   {
+      String[] commandArray = subCommand.split("\\s+");
+      for(int x = 0; x < 3; x++)
+      {
+         subCommand = createSubCommand(commandArray);
+         commandArray = subCommand.split("\\s+");
+      }
+      int degIn = subCommand.indexOf('*');
+      int minIn = subCommand.indexOf('\'');
+      int secIn = subCommand.indexOf('\"');
+      String [] tempCommand = subCommand.substring(0, degIn).split("\\s+");
+      int degrees = Integer.parseInt(tempCommand[0]);
+      tempCommand = subCommand.substring(degIn+1, minIn).split("\\s+");
+      int minutes;
+      if(tempCommand[0].equals(""))
+      {
+         minutes = Integer.parseInt(tempCommand[1]);
+      }
+      else
+      {
+         minutes = Integer.parseInt(tempCommand[0]);
+      }
+      tempCommand = subCommand.substring(minIn+1, secIn).split("\\s+");
+      double seconds;
+      if(tempCommand[0].equals(""))
+      {
+         seconds = Double.parseDouble(tempCommand[1]);
+      }
+      else
+      {
+         seconds = Double.parseDouble(tempCommand[0]);
+      }
+      Latitude lat = new Latitude(degrees, minutes, seconds);
+      // create the longitude
+      int lonIndex = subCommand.indexOf('/');
+      String lonCoor = subCommand.substring(lonIndex+1, subCommand.length()-1);
+      if(lonCoor.substring(0, 0).equals(""))
+      {
+         lonCoor = lonCoor.substring(1, lonCoor.length()-1);
+      }
+      degIn = lonCoor.indexOf('*');
+      minIn = lonCoor.indexOf('\'');
+      secIn = lonCoor.indexOf('\"');
+      tempCommand = lonCoor.substring(0, degIn).split("\\s+");
+      degrees = Integer.parseInt(tempCommand[0]);
+      tempCommand = lonCoor.substring(degIn+1, minIn).split("\\s+");
+      if(tempCommand[0].equals(""))
+      {
+         minutes = Integer.parseInt(tempCommand[1]);
+      }
+      else
+      {
+         minutes = Integer.parseInt(tempCommand[0]);
+      }
+      tempCommand = lonCoor.substring(minIn+1, secIn).split("\\s+");
+      if(tempCommand[0].equals(""))
+      {
+         seconds = Double.parseDouble(tempCommand[1]);
+      }
+      else
+      {
+         seconds = Double.parseDouble(tempCommand[0]);
+      }
+      Longitude lon = new Longitude(degrees, minutes, seconds);
+      return new CoordinatesWorld(lat, lon);
+   
    }
 
 
