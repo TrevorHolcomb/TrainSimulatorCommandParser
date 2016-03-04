@@ -30,105 +30,109 @@ public class CommandParser
    
    public void parse()
    {
-      String[] commandArray = this.commandText.split("\\s+");
-      String subCommand;
-      boolean scheduleFlag = false;
-      
-      /* 
-       * If it is a schedule command then set trigger time and flag to true
-       * updates the commandArray to include only the command to input
-       */
-      
-      if(commandArray[0].toUpperCase().equals("@SCHEDULE")){
-    	  scheduleFlag = true;
-    	  time = Double.parseDouble(commandArray[2]);
-    	  commandArray = createScheduleCommand(commandArray);
-      }
-      
-      for(String s : commandArray){
-    	  System.out.println(s);
-      }
-      
-      switch (commandArray[0].toUpperCase()){
-         case "DO":
-        	 subCommand = createSubCommand(commandArray);
-        	 if(scheduleFlag){
-        		 A_Command commandBehavioral = createBehavioralCommand(subCommand);
-        	 }
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
-            A_Command commandBehavioral = createBehavioralCommand(subCommand);
-            break;
-         case "CREATE":
-            subCommand = createSubCommand(commandArray);
-            //this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
-            A_Command commandCreational = createCreationalCommand(subCommand);
-            break;
-         case "@EXIT":
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createExitCommand());
-            A_Command commandExit = createExitCommand();
-            break;
-         case "@RUN":
-            subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
-            A_Command commandMetaRun = createMetaRunCommand(subCommand);
-            break;
-         /*case "@SCHEDULE":
-            subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand));
-            A_Command commandMetaSchedule = createMetaSchedule(subCommand);
-            break;*/
-         case "OPEN":
-            subCommand = createSubCommand(commandArray);
-            /*
-             * if the schedule flag is on then create an command and pass the the scheduler
-             */
-            if(scheduleFlag){
-       		 	A_Command commandMetaView = createMetaView(subCommand);
-       		 	//this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand))
-       		 	A_Command commandMetaSchedule = createMetaSchedule(commandMetaView);
-       	 	}
-            /*
-             * else run the standard command
-             */
-            else{
-	            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
-	            A_Command commandMetaView = createMetaView(subCommand);
-            }    
-            break;
-         case "CLOSE":
-            subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
-            A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
-            break;
-         case "COMMIT":
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
-            A_Command commandStructuralCommit = createStructuralCommit();
-            break;
-         case "COUPLE":
-            subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
-            A_Command commandStructuralCouple = createStructuralCouple(subCommand);
-            break;
-         case "LOCATE":
-            subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
-            A_Command commandStructuralLocate = createStructuralLocate(subCommand);
-            break;
-         case "UNCOUPLE":
-            subCommand = createSubCommand(commandArray);
-            // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
-            A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
-            break;
-         case "USE":
-        	 subCommand = createSubCommand(commandArray);
-            // need to have the parserHelper in order to add a reference
-            // this will be completed later
-        	 setCoordinatesWorldReference(subCommand);
-            break;
-         default:
-            throw new IllegalArgumentException("Invalid Command");
+      String [] multCom = this.commandText.split(";");
+      String singleCommand; 
+      for(int i = 0; i < multCom.length; i++)
+      {
+         singleCommand = multCom[i];
+         String[] commandArray = this.commandText.split("\\s+");
+         String subCommand;
+         boolean scheduleFlag = false;
+         
+         /* 
+          * If it is a schedule command then set trigger time and flag to true
+          * updates the commandArray to include only the command to input
+          */
+         
+         if(commandArray[0].toUpperCase().equals("@SCHEDULE")){
+       	  scheduleFlag = true;
+       	  time = Double.parseDouble(commandArray[2]);
+       	  commandArray = createScheduleCommand(commandArray);
+         }
+         
+         
+         switch (commandArray[0].toUpperCase()){
+            case "DO":
+           	 subCommand = createSubCommand(commandArray);
+           	 if(scheduleFlag){
+           		 A_Command commandBehavioral = createBehavioralCommand(subCommand);
+           	 }
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
+               A_Command commandBehavioral = createBehavioralCommand(subCommand);
+               break;
+            case "CREATE":
+               subCommand = createSubCommand(commandArray);
+               //this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
+               A_Command commandCreational = createCreationalCommand(subCommand);
+               break;
+            case "@EXIT":
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createExitCommand());
+               A_Command commandExit = createExitCommand();
+               break;
+            case "@RUN":
+               subCommand = createSubCommand(commandArray);
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
+               A_Command commandMetaRun = createMetaRunCommand(subCommand);
+               break;
+            /*case "@SCHEDULE":
+               subCommand = createSubCommand(commandArray);
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand));
+               A_Command commandMetaSchedule = createMetaSchedule(subCommand);
+               break;*/
+            case "OPEN":
+               subCommand = createSubCommand(commandArray);
+               /*
+                * if the schedule flag is on then create an command and pass the the scheduler
+                */
+               if(scheduleFlag){
+          		 	A_Command commandMetaView = createMetaView(subCommand);
+          		 	//this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand))
+          		 	A_Command commandMetaSchedule = createMetaSchedule(commandMetaView);
+          	 	}
+               /*
+                * else run the standard command
+                */
+               else{
+   	            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
+   	            A_Command commandMetaView = createMetaView(subCommand);
+               }    
+               break;
+            case "CLOSE":
+               subCommand = createSubCommand(commandArray);
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
+               A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
+               break;
+            case "COMMIT":
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
+               A_Command commandStructuralCommit = createStructuralCommit();
+               break;
+            case "COUPLE":
+               subCommand = createSubCommand(commandArray);
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
+               A_Command commandStructuralCouple = createStructuralCouple(subCommand);
+               break;
+            case "LOCATE":
+               subCommand = createSubCommand(commandArray);
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
+               A_Command commandStructuralLocate = createStructuralLocate(subCommand);
+               break;
+            case "UNCOUPLE":
+               subCommand = createSubCommand(commandArray);
+               // this is where you would do this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
+               A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
+               break;
+            case "USE":
+           	 subCommand = createSubCommand(commandArray);
+               // need to have the parserHelper in order to add a reference
+               // this will be completed later
+           	 setCoordinatesWorldReference(subCommand);
+               break;
+            default:
+               throw new IllegalArgumentException("Invalid Command");
+         }
       }
    }
+
    
    // helper method that strips the first element of the array and returns
    // a string with the rest of the elements
