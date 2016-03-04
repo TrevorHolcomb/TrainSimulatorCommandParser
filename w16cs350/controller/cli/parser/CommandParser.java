@@ -16,15 +16,15 @@ import java.util.*;
 
 public class CommandParser
 {
-   //private A_ParserHelper parserHelper;
+   private MyParserHelper parserHelper;
    private String commandText;
    private double time;
 
-   public CommandParser(String commandText)
+   public CommandParser(MyParserHelper parserHelper, String commandText)
    {
       // I took out the parserHelper for the time being so
       // that we can actually test our strings by only passing through a string
-      //this.parserHelper = parserHelper;
+      this.parserHelper = parserHelper;
       this.commandText = commandText;
    }
    
@@ -159,10 +159,10 @@ public class CommandParser
       return temp;
    } 
    
-   /*public A_ParserHelper getParserHelper()
+   public A_ParserHelper getParserHelper()
    {
       return this.parserHelper;
-   }*/
+   }
    
    public String getCommandText()
    {
