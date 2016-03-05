@@ -177,10 +177,10 @@ public class CommandParser
     */
    private A_Command createBehavioralCommand(String subCommand)
    {
-      String[] commandArray = subCommand.split("\\s+");
+      String[] commandArray = subCommand.split("[()\\s]+");
       subCommand = createSubCommand(commandArray);
       A_Command command = null;
-      switch(commandArray[0])
+      switch(commandArray[0].toUpperCase())
       {
       	case "BRAKE":
       		command = createBehavioralCommandBrake(subCommand);
@@ -205,7 +205,7 @@ public class CommandParser
     */
    private A_Command createBehavioralCommandBrake(String subCommand)
    {
-	   String[] commandArray = subCommand.split("\\s+");
+	   String[] commandArray = subCommand.split("[()\\s]+");
 	   subCommand = createSubCommand(commandArray);
 	   A_Command command = new CommandBehavioralBrake(commandArray[0]);
 	   return command;
@@ -219,10 +219,10 @@ public class CommandParser
     */
    private A_Command createBehavioralCommandSelect(String subCommand)
    {
-	   String[] commandArray = subCommand.split("\\s+");
+	   String[] commandArray = subCommand.split("[()\\s]+");
 	   subCommand = createSubCommand(commandArray);
 	   A_Command command = null;
-	   switch(commandArray[0])
+	   switch(commandArray[0].toUpperCase())
 	   {
 	   	case"DRAWBRIDGE":
 		   command = createBehavioralCommandSelectDrawbridge(subCommand);
@@ -244,8 +244,8 @@ public class CommandParser
     */
    private A_Command createBehavioralCommandSelectDrawbridge(String subCommand)
    {
-	   String[] commandArray = subCommand.split("\\s+");
-	   A_Command command = new CommandBehavioralSelectBridge(commandArray[0], commandArray[2].equals("UP"));
+	   String[] commandArray = subCommand.split("[()\\s]+");
+	   A_Command command = new CommandBehavioralSelectBridge(commandArray[0], commandArray[2].toUpperCase().equals("UP"));
 	   return command;
    }//end of createBehavioralCommandSelectDrawbridge()
    
@@ -271,7 +271,7 @@ public class CommandParser
    private A_Command createBehavioralCommandSelectSwitch(String subCommand)
    {
 	   String[] commandArray = subCommand.split("\\s+");
-	   A_Command command = new CommandBehavioralSelectSwitch(commandArray[0], commandArray[2].equals("PRIMARY"));
+	   A_Command command = new CommandBehavioralSelectSwitch(commandArray[0], commandArray[2].toUpperCase().equals("PRIMARY"));
 	   return command;
    }//end of createBehavioralCommandSelectSwitch
    
@@ -283,16 +283,16 @@ public class CommandParser
     */
    private A_Command createBehavioralCommandSet(String subString)
    {
-	   String[] commandArray = subString.split("\\s+");
+	   String[] commandArray = subString.split("[()\\s]+");
 	   subString = createSubCommand(commandArray);
 	   A_Command command = null;
-	   if(commandArray[0].equals("REFERENCE"))
+	   if(commandArray[0].toUpperCase().equals("REFERENCE"))
 	   {
 		   command = new CommandBehavioralSetReference(commandArray[1]);
 	   }//end of if
 	   else
 	   {
-		   switch(commandArray[1])
+		   switch(commandArray[1].toUpperCase())
 		   {
 		   	case"DIRECTION":
 		   		command = createBehavioralCommandSetDirection(commandArray);
@@ -312,7 +312,7 @@ public class CommandParser
     */
    private A_Command createBehavioralCommandSetDirection(String[] commandArray)
    {
-	   return new CommandBehavioralSetDirection(commandArray[0], commandArray[2].equals("FORWARD"));
+	   return new CommandBehavioralSetDirection(commandArray[0], commandArray[2].toUpperCase().equals("FORWARD"));
    }//end of createBehavioralCommandSetDirection(String[] commandArray)
    
    /*
@@ -330,7 +330,7 @@ public class CommandParser
    // splits the creationals commands further
    private A_Command createCreationalCommand(String subCommand)
    {
-      String[] commandArray = subCommand.split("\\s+");
+      String[] commandArray = subCommand.split("[()\\s]+");
       A_Command command = null;
       switch (commandArray[0].toUpperCase()){
          case "POWER":
@@ -880,7 +880,7 @@ public class CommandParser
     */
    private A_Command createStructuralCouple(String subCommand)
    {
-      String[] commandArray = subCommand.split("\\s+");
+      String[] commandArray = subCommand.split("[()\\s]+");
       return new CommandStructuralCouple(commandArray[1], commandArray[3]);
    }//end of craeteStructuralCouple
    
@@ -890,12 +890,12 @@ public class CommandParser
     */
    private A_Command createStructuralLocate(String subCommand)
    {
-      String[] commandArray = subCommand.split("\\s+");
+      String[] commandArray = subCommand.split("[()\\s]+");
       String id1 = commandArray[1];
       String id2 = commandArray[4];
       double distance = Double.parseDouble(commandArray[6]);
       String from = commandArray[8];
-      return new CommandStructuralLocate(id1, new TrackLocator(id2, distance, from.equals("START")));
+      return new CommandStructuralLocate(id1, new TrackLocator(id2, distance, from.toUpperCase().equals("START")));
    }
    
    /* @Author Marco Karier
@@ -904,7 +904,7 @@ public class CommandParser
     */
    private A_Command createStructuralUncouple(String subCommand)
    {
-      String[] commandArray = subCommand.split("\\s+");
+      String[] commandArray = subCommand.split("[()\\s]+");
       return new CommandStructuralUncouple(commandArray[1], commandArray[3]);
    }//end of createStructuralUncouple
    
