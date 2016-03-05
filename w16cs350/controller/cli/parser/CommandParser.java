@@ -52,81 +52,148 @@ public class CommandParser
          
          
          switch (commandArray[0].toUpperCase()){
-            case "DO":
-           	 subCommand = createSubCommand(commandArray);
-           	 if(scheduleFlag){
-           		 A_Command commandBehavioral = createBehavioralCommand(subCommand);
-           	 }
-               this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
-               //A_Command commandBehavioral = createBehavioralCommand(subCommand);
-               break;
-            case "CREATE":
-               subCommand = createSubCommand(commandArray);
-               this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
-               //A_Command commandCreational = createCreationalCommand(subCommand);
-               break;
-            case "@EXIT":
-               this.parserHelper.getActionProcessor().schedule(createExitCommand());
-               //A_Command commandExit = createExitCommand();
-               break;
-            case "@RUN":
-               subCommand = createSubCommand(commandArray);
-               this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
-               //A_Command commandMetaRun = createMetaRunCommand(subCommand);
-               break;
-            /*case "@SCHEDULE":
-               subCommand = createSubCommand(commandArray);
-               // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand));
-               A_Command commandMetaSchedule = createMetaSchedule(subCommand);
-               break;*/
-            case "OPEN":
-               subCommand = createSubCommand(commandArray);
-               /*
-                * if the schedule flag is on then create an command and pass the the scheduler
-                */
-               if(scheduleFlag){
-          		 	A_Command commandMetaView = createMetaView(subCommand);
-          		 	//this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand))
-          		 	A_Command commandMetaSchedule = createMetaSchedule(commandMetaView);
-          	 	}
-               /*
-                * else run the standard command
-                */
-               else{
-   	            this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
-   	            //A_Command commandMetaView = createMetaView(subCommand);
-               }    
-               break;
-            case "CLOSE":
-               subCommand = createSubCommand(commandArray);
-               this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
-               //A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
-               break;
-            case "COMMIT":
-               this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
-               //A_Command commandStructuralCommit = createStructuralCommit();
-               break;
-            case "COUPLE":
-               subCommand = createSubCommand(commandArray);
-               this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
-               //A_Command commandStructuralCouple = createStructuralCouple(subCommand);
-               break;
-            case "LOCATE":
-               subCommand = createSubCommand(commandArray);
-               this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
-               //A_Command commandStructuralLocate = createStructuralLocate(subCommand);
-               break;
-            case "UNCOUPLE":
-               subCommand = createSubCommand(commandArray);
-               this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
-               //A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
-               break;
-            case "USE":
-           	 subCommand = createSubCommand(commandArray);
-               // need to have the parserHelper in order to add a reference
-               // this will be completed later
-           	 setCoordinatesWorldReference(subCommand);
-               break;
+         case "DO":
+        	 subCommand = createSubCommand(commandArray);
+        	 if(scheduleFlag){
+        		 A_Command commandBehavioral = createBehavioralCommand(subCommand);
+        		 this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandBehavioral));
+        		 //A_Command commandMetaSchedule = createMetaSchedule(commandBehavioral);
+        	 }
+        	 
+        	 else{
+	            this.parserHelper.getActionProcessor().schedule(createBehavioralCommand(subCommand));
+	            //A_Command commandBehavioral = createBehavioralCommand(subCommand);
+        	 }    
+            break;
+         case "CREATE":
+            subCommand = createSubCommand(commandArray);
+            if(scheduleFlag){
+            	A_Command commandCreational = createCreationalCommand(subCommand);
+            	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandCreational));
+            	//A_Command commandMetaSchedule = createMetaSchedule(commandCreational);
+            }
+            
+            else{
+	            this.parserHelper.getActionProcessor().schedule(createCreationalCommand(subCommand));
+	            //A_Command commandCreational = createCreationalCommand(subCommand);
+            }    
+            break;
+         case "@EXIT":
+        	 if(scheduleFlag){
+        		 A_Command commandExit = createExitCommand();
+        		 this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandExit));
+        		 //A_Command commandMetaSchedule = createMetaSchedule(commandExit);
+        	 }
+        	 
+        	 else{
+	            this.parserHelper.getActionProcessor().schedule(createExitCommand());
+	            //A_Command commandExit = createExitCommand();
+        	 }    
+            break;
+         case "@RUN":
+            subCommand = createSubCommand(commandArray);
+            if(scheduleFlag){
+            	A_Command commandMetaRun = createMetaRunCommand(subCommand);
+            	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandMetaRun));
+            	//A_Command commandMetaSchedule = createMetaSchedule(commandMetaRun);
+            }
+            
+            else{
+	            this.parserHelper.getActionProcessor().schedule(createMetaRunCommand(subCommand));
+	            //A_Command commandMetaRun = createMetaRunCommand(subCommand);
+            }
+            break;
+         /*case "@SCHEDULE":
+            subCommand = createSubCommand(commandArray);
+            // this is where you would do this.parserHelper.getActionProcessor().schedule(createMetaSchedule(subCommand));
+            A_Command commandMetaSchedule = createMetaSchedule(subCommand);
+            break;*/
+         case "OPEN":
+            subCommand = createSubCommand(commandArray);
+            /*
+             * if the schedule flag is on then create an command and pass the the scheduler
+             */
+            if(scheduleFlag){
+       		 	A_Command commandMetaView = createMetaView(subCommand);
+       		 	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandMetaView));
+       		 	//A_Command commandMetaSchedule = createMetaSchedule(commandMetaView);
+       	 	}
+            /*
+             * else run the standard command
+             */
+            else{
+	            this.parserHelper.getActionProcessor().schedule(createMetaView(subCommand));
+	            //A_Command commandMetaView = createMetaView(subCommand);
+            }    
+            break;
+         case "CLOSE":
+            subCommand = createSubCommand(commandArray);
+            if(scheduleFlag){
+            	A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
+            	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandMetaViewDestroy));
+            	//A_Command commandMetaSchedule = createMetaSchedule(commandMetaViewDestroy);
+            }
+            
+            else{
+	            this.parserHelper.getActionProcessor().schedule(createMetaViewDestroy(subCommand));
+	            //A_Command commandMetaViewDestroy = createMetaViewDestroy(subCommand);
+            }    
+            break;
+         case "COMMIT":
+        	 if(scheduleFlag){
+        		A_Command commandStructuralCommit = createStructuralCommit();
+             	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandStructuralCommit));
+             	//A_Command commandMetaSchedule = createMetaSchedule(commandStructuralCommit);
+             }
+        	 
+        	 else{
+	            this.parserHelper.getActionProcessor().schedule(createStructuralCommit());
+	            //A_Command commandStructuralCommit = createStructuralCommit();
+        	 }    
+            break;
+         case "COUPLE":
+            subCommand = createSubCommand(commandArray);
+            if(scheduleFlag){
+            	A_Command commandStructuralCouple = createStructuralCouple(subCommand);
+            	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandStructuralCouple));
+            	//A_Command commandMetaSchedule = createMetaSchedule(commandStructuralCouple);
+            }
+            
+            else{
+	            this.parserHelper.getActionProcessor().schedule(createStructuralCouple(subCommand));
+	            //A_Command commandStructuralCouple = createStructuralCouple(subCommand);
+            }    
+            break;
+         case "LOCATE":
+            subCommand = createSubCommand(commandArray);
+            if(scheduleFlag){
+            	A_Command commandStructuralLocate = createStructuralLocate(subCommand);
+            	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandStructuralLocate));
+            	//A_Command commandMetaSchedule = createMetaSchedule(commandStructuralLocate);
+            }
+            
+            else{
+	            this.parserHelper.getActionProcessor().schedule(createStructuralLocate(subCommand));
+	            //A_Command commandStructuralLocate = createStructuralLocate(subCommand);
+            }
+            break;
+         case "UNCOUPLE":
+            subCommand = createSubCommand(commandArray);
+            if(scheduleFlag){
+            	 A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
+            	this.parserHelper.getActionProcessor().schedule(createMetaSchedule(commandStructuralUncouple));
+            	//A_Command commandMetaSchedule = createMetaSchedule(commandStructuralUncouple);
+            }
+            
+            else{
+	            this.parserHelper.getActionProcessor().schedule(createStructuralUncouple(subCommand));
+	            //A_Command commandStructuralUncouple = createStructuralUncouple(subCommand);
+            }    
+            break;
+         case "USE":
+        	 subCommand = createSubCommand(commandArray);
+        	 setCoordinatesWorldReference(subCommand);
+            break;
             default:
                throw new IllegalArgumentException("Invalid Command");
          }
@@ -146,7 +213,7 @@ public class CommandParser
             subCommand.append(" ");
       }
       return subCommand.toString();
-   }  
+   } 
    
    private String[] createScheduleCommand(String[] commandArray)
    {
@@ -552,6 +619,9 @@ public class CommandParser
       return command;
    }
    
+   /*
+    * Helper method to create delta coordinates
+    */
    private CoordinatesDelta processDelta(String[] command, int index){
 	   double x = Double.parseDouble(command[index]);
 	   double y = Double.parseDouble(command[index + 2]);
@@ -559,6 +629,9 @@ public class CommandParser
 	   return coord;
    }
    
+   /*
+    * Helper method that returns a an origin given two delta coordinates and distancce
+    */  
    private CoordinatesDelta calcOrigin(CoordinatesDelta start, CoordinatesDelta end, double height){
 	   double startX = start.getX();
 	   double startY = start.getY();
@@ -577,9 +650,8 @@ public class CommandParser
 	 * further brakes down the create track and returns specified command, if it
 	 * is a BRIDGE or SWITCH it must be broken down further
 	 */
-
 	private A_Command createTrackCommand(String command) {
-		String[] commandArray = command.split("[*'\"\\s]+");
+		String[] commandArray = command.split("[()*'\"\\s]+");
 		A_Command commandType = null;
 		String first = commandArray[0].toUpperCase();
 
@@ -600,13 +672,13 @@ public class CommandParser
 		}	
 		
 		else{
-			//worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[3]);
 		}
 		CoordinatesDelta deltaStart = processDelta(commandArray, 6 + i);
 		CoordinatesDelta deltaEnd = processDelta(commandArray, 10 + i);
 		PointLocator locator = new PointLocator(worldCoor, deltaStart, deltaEnd);
 
-		switch (commandArray[0]) {
+		switch (commandArray[0].toUpperCase()) {
 
 		case "CROSSING":
 			commandType = new CommandCreateTrackCrossing(id, locator);
@@ -640,12 +712,15 @@ public class CommandParser
 		}
 		return commandType;
 	}
-
+	
+	/*
+	 * brakes down the special track cases
+	 */
 	private A_Command createTracksubCommand(String command) {
 		String[] commandArray = command.split("\\s+");
 		String subCommand;
 		A_Command commandType = null;
-		switch (commandArray[0]) {
+		switch (commandArray[0].toUpperCase()) {
 
 		case "BRIDGE":
 			subCommand = createSubCommand(commandArray);
@@ -675,9 +750,12 @@ public class CommandParser
 		}
 		return commandType;
 	}
-
+	
+	/*
+	 * returns a fixed or draw bridge
+	 */
 	private A_Command createBridgeCommand(String command) {
-		String[] commandArray = command.split("[*'\"\\s]+");
+		String[] commandArray = command.split("[()*'\"\\s]+");
 		A_Command commandType = null;
 		String id;
 		int index = 0;
@@ -697,7 +775,7 @@ public class CommandParser
 		}
 		
 		else{
-			//worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[3]);
 		}
 		
 		CoordinatesDelta deltaStart = processDelta(commandArray, 6 + index);
@@ -714,9 +792,12 @@ public class CommandParser
 		}
 		return commandType;
 	}
-
+	
+	/*
+	 * returns the specific switch command
+	 */
 	private A_Command createSwitchCommand(String command) {
-		String[] commandArray = command.split("[*'\"\\s]+");
+		String[] commandArray = command.split("[()*'\"\\s]+");
 		
 		int index = 0;
 		A_Command commandType = null;
@@ -732,9 +813,9 @@ public class CommandParser
 		}	
 		
 		else{
-			//worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[3]);
 		}
-		switch (commandArray[0]) {
+		switch (commandArray[0].toUpperCase()) {
 
 		case "WYE":
 			CoordinatesDelta wyeDeltaStart = processDelta(commandArray, 6 + index);
@@ -762,8 +843,11 @@ public class CommandParser
 		return commandType;
 	}
 	
+	/*
+	 * returns a round house command
+	 */
 	private A_Command createRoundhouseCommand(String command) {
-		String[] commandArray = command.split("[*'\"\\s]+");
+		String[] commandArray = command.split("[()*'\"\\s]+");
 		A_Command commandType = null;
 		int i = 0;
 		CoordinatesWorld worldCoor = null;
@@ -777,7 +861,7 @@ public class CommandParser
 		}
 		
 		else{
-			//worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[3]);
 		}
 		
 		CoordinatesDelta deltaOrigin = processDelta(commandArray, 5 + i);
@@ -799,33 +883,38 @@ public class CommandParser
 		return commandType;
 	}
 
-	// creates and returns CommandMetaDoMetaExit()
+	/*
+	 * creates and returns CommandMetaDoMetaExit()
+	 */
 	private A_Command createExitCommand() {
 		return new CommandMetaDoExit();
 	}
 
-	// returns a CommandMetaDoMetaRun command
+	/*
+	 *  returns a CommandMetaDoMetaRun command
+	 */
 	private A_Command createMetaRunCommand(String subCommand) {
 		A_Command command = new CommandMetaDoRun(subCommand);
 		return command;
 	}
 
-	// returns a CommandMetaDoMetaSchedule command
+	/*
+	 *  returns a CommandMetaDoMetaSchedule command
+	 */
 	private A_Command createMetaSchedule(A_Command command) {
 		A_Command schedule = new CommandMetaDoSchedule(this.time, command);
 		return schedule;
 	}
 
-	// returns a CommandMetaViewGenerate command
+	/*
+	 *  returns a CommandMetaViewGenerate command
+	 */
+	
 	private A_Command createMetaView(String subCommand) {
-		String[] commandArray = subCommand.split("[*'\"\\s]+");
+		String[] commandArray = subCommand.split("[()*'\"\\s]+");
 		String id = commandArray[1];
 		int i = 0;
-		int ix = 0;
-		for(String s : commandArray){
-			System.out.println(ix + ". " + s);
-			ix++;
-		}
+		
 		CoordinatesWorld origin = null;
 		A_Command command = null;
 		
@@ -836,7 +925,7 @@ public class CommandParser
 			i = 6;
 		}
 		else{
-			//origin = this.parserHelper.getReference(commandArray[3]);
+			origin = this.parserHelper.getReference(commandArray[3]);
 		}
 		
 		int worldWidth = Integer.parseInt(commandArray[6 + i]);
@@ -848,21 +937,27 @@ public class CommandParser
 		return command;
 	}
 
-	// returns a CommandMetaViewDestroy command
+	/*
+	 *  returns a CommandMetaViewDestroy command
+	 */
+	
 	private A_Command createMetaViewDestroy(String subCommand) {
 		String[] commandArray = subCommand.split("\\s+");
 		A_Command commandType = new CommandMetaViewDestroy(commandArray[1]);
 		return commandType;
 	}
 
+	/*
+	 * sets the world coord reference as $id
+	 */
 	
 	private void setCoordinatesWorldReference(String subCommand) {
-		String[] commandArray = subCommand.split("\\s+");
+		String[] commandArray = subCommand.split("[()*'\"\\s]+");
 		String id = commandArray[0];
-		Latitude latitude = new Latitude(Double.parseDouble(commandArray[3]));
-		Longitude longitude = new Longitude(Double.parseDouble(commandArray[5]));
+		Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
+		Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
 		CoordinatesWorld coordinates = new CoordinatesWorld(latitude, longitude);
-		//this.parserHelper.addReference(id, coordinates);
+		this.parserHelper.addReference(id, coordinates);
 		
 	}
    
