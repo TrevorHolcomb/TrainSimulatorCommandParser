@@ -624,13 +624,13 @@ public class CommandParser
     */
    private CoordinatesDelta processDelta(String[] command, int index){
 	   double x = Double.parseDouble(command[index]);
-	   double y = Double.parseDouble(command[index + 2]);
+	   double y = Double.parseDouble(command[index + 1]);
 	   CoordinatesDelta coord= new CoordinatesDelta(x, y);
 	   return coord;
    }
    
    /*
-    * Helper method that returns a an origin given two delta coordinates and distancce
+    * Helper method that returns a an origin given two delta coordinates and distance
     */  
    private CoordinatesDelta calcOrigin(CoordinatesDelta start, CoordinatesDelta end, double height){
 	   double startX = start.getX();
@@ -651,7 +651,7 @@ public class CommandParser
 	 * is a BRIDGE or SWITCH it must be broken down further
 	 */
 	private A_Command createTrackCommand(String command) {
-		String[] commandArray = command.split("[()*'\"\\s]+");
+		String[] commandArray = command.split("[+:/()*'\"\\s]+");
 		A_Command commandType = null;
 		String first = commandArray[0].toUpperCase();
 
@@ -666,16 +666,16 @@ public class CommandParser
 		
 		if(commandArray[3].charAt(0) != '$'){
 			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
-			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[6]), Integer.parseInt(commandArray[7]), Double.parseDouble(commandArray[8]));
 			worldCoor = new CoordinatesWorld(latitude, longitude);
-			i = 6;
+			i = 5;
 		}	
 		
 		else{
-			worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[3].substring(1));
 		}
 		CoordinatesDelta deltaStart = processDelta(commandArray, 6 + i);
-		CoordinatesDelta deltaEnd = processDelta(commandArray, 10 + i);
+		CoordinatesDelta deltaEnd = processDelta(commandArray, 9 + i);
 		PointLocator locator = new PointLocator(worldCoor, deltaStart, deltaEnd);
 
 		switch (commandArray[0].toUpperCase()) {
@@ -685,8 +685,8 @@ public class CommandParser
 			break;
 
 		case "CROSSOVER":
-			CoordinatesDelta delta2Start = processDelta(commandArray, 14 + i);
-			CoordinatesDelta delta2End = processDelta(commandArray, 18 + i);
+			CoordinatesDelta delta2Start = processDelta(commandArray, 12 + i);
+			CoordinatesDelta delta2End = processDelta(commandArray, 15 + i);
 			commandType = new CommandCreateTrackCrossover(id, worldCoor, deltaStart, deltaEnd, delta2Start, delta2End);
 			break;
 
@@ -755,10 +755,11 @@ public class CommandParser
 	 * returns a fixed or draw bridge
 	 */
 	private A_Command createBridgeCommand(String command) {
-		String[] commandArray = command.split("[()*'\"\\s]+");
+		String[] commandArray = command.split("[+/:()*'\"\\s]+");
 		A_Command commandType = null;
 		String id;
 		int index = 0;
+	
 		boolean isDraw = commandArray[0].toUpperCase().equals("DRAW");
 		if (!isDraw) {
 			index--;
@@ -766,24 +767,24 @@ public class CommandParser
 		
 		id = commandArray[1 + index];
 		CoordinatesWorld worldCoor = null;
-		
-		if(commandArray[3].charAt(0) != '$'){
-			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
-			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
+
+		if(commandArray[3 + index].charAt(0) != '$'){
+			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3 + index]), Integer.parseInt(commandArray[4 + index]), Double.parseDouble(commandArray[5 + index]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[6 + index]), Integer.parseInt(commandArray[7 + index]), Double.parseDouble(commandArray[8 + index]));
 			worldCoor = new CoordinatesWorld(latitude, longitude);
-			index += 6;
+			index += 5;
 		}
 		
 		else{
-			worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[3 + index].substring(1));
 		}
 		
 		CoordinatesDelta deltaStart = processDelta(commandArray, 6 + index);
-		CoordinatesDelta deltaEnd = processDelta(commandArray, 10 + index);
+		CoordinatesDelta deltaEnd = processDelta(commandArray, 9 + index);
 		PointLocator pi = new PointLocator(worldCoor, deltaStart, deltaEnd);
 		
 		if(isDraw){
-			Angle angle = new Angle(Double.parseDouble(commandArray[14 + index]));
+			Angle angle = new Angle(Double.parseDouble(commandArray[12 + index]));
 			commandType = new CommandCreateTrackBridgeDraw(id, pi, angle);
 		}
 		
@@ -797,7 +798,7 @@ public class CommandParser
 	 * returns the specific switch command
 	 */
 	private A_Command createSwitchCommand(String command) {
-		String[] commandArray = command.split("[()*'\"\\s]+");
+		String[] commandArray = command.split("[+:/()*'\"\\s]+");
 		
 		int index = 0;
 		A_Command commandType = null;
@@ -807,38 +808,38 @@ public class CommandParser
 		CoordinatesWorld  worldCoor = null;
 		if(commandArray[3].charAt(0) != '$'){
 			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
-			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[6]), Integer.parseInt(commandArray[7]), Double.parseDouble(commandArray[8]));
 			worldCoor = new CoordinatesWorld(latitude, longitude);
-			index = 6;
+			index = 5;
 		}	
 		
 		else{
-			worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[3].substring(1));
 		}
 		switch (commandArray[0].toUpperCase()) {
 
-		case "WYE":
-			CoordinatesDelta wyeDeltaStart = processDelta(commandArray, 6 + index);
-			CoordinatesDelta wyeDeltaEnd = processDelta(commandArray, 10 + index);
-			double distance1 = Double.parseDouble(commandArray[15 + index]);
-			CoordinatesDelta originWye = calcOrigin(wyeDeltaStart, wyeDeltaEnd, distance1);
-			CoordinatesDelta wyeDeltaStart2 = processDelta(commandArray, 18 + index);
-			CoordinatesDelta wyeDeltaEnd2 = processDelta(commandArray, 22 + index);
-			double distance2 = Double.parseDouble(commandArray[15 + index]);
-			CoordinatesDelta originWye2 = calcOrigin(wyeDeltaStart2, wyeDeltaEnd2, distance2);
-			commandType = new CommandCreateTrackSwitchWye(id, worldCoor, wyeDeltaStart, wyeDeltaEnd, originWye, wyeDeltaStart2, wyeDeltaEnd2, originWye2);
-
-		case "TURNOUT":
-			CoordinatesDelta deltaStart = processDelta(commandArray, 7 + index);
-			CoordinatesDelta deltaEnd = processDelta(commandArray, 11 + index);
-			CoordinatesDelta curveStart = processDelta(commandArray, 17 + index);
-			CoordinatesDelta curveEnd =  processDelta(commandArray, 21 + index);
-			double distance = Double.parseDouble(commandArray[26 + index]);
-			CoordinatesDelta originTurnout = calcOrigin(curveStart, curveEnd, distance);
-			commandType = new CommandCreateTrackSwitchTurnout(id, worldCoor, deltaStart, deltaEnd, 
-					  											curveStart, curveEnd, originTurnout);
-			 
-			break;
+			case "WYE":
+				CoordinatesDelta wyeDeltaStart = processDelta(commandArray, 6 + index);
+				CoordinatesDelta wyeDeltaEnd = processDelta(commandArray, 9 + index);
+				double distance1 = Double.parseDouble(commandArray[13 + index]);
+				CoordinatesDelta originWye = calcOrigin(wyeDeltaStart, wyeDeltaEnd, distance1);
+				CoordinatesDelta wyeDeltaStart2 = processDelta(commandArray, 16 + index);
+				CoordinatesDelta wyeDeltaEnd2 = processDelta(commandArray, 19 + index);
+				double distance2 = Double.parseDouble(commandArray[23 + index]);
+				CoordinatesDelta originWye2 = calcOrigin(wyeDeltaStart2, wyeDeltaEnd2, distance2);
+				commandType = new CommandCreateTrackSwitchWye(id, worldCoor, wyeDeltaStart, wyeDeltaEnd, originWye, wyeDeltaStart2, wyeDeltaEnd2, originWye2);
+				break;
+	
+			case "TURNOUT":
+				CoordinatesDelta deltaStart = processDelta(commandArray, 7 + index);
+				CoordinatesDelta deltaEnd = processDelta(commandArray, 10 + index);
+				CoordinatesDelta curveStart = processDelta(commandArray, 15 + index);
+				CoordinatesDelta curveEnd =  processDelta(commandArray, 18 + index);
+				double distance = Double.parseDouble(commandArray[22 + index]);
+				CoordinatesDelta originTurnout = calcOrigin(curveStart, curveEnd, distance);
+				commandType = new CommandCreateTrackSwitchTurnout(id, worldCoor, deltaStart, deltaEnd, 
+						  											curveStart, curveEnd, originTurnout);
+				break;
 		}
 		return commandType;
 	}
@@ -847,35 +848,35 @@ public class CommandParser
 	 * returns a round house command
 	 */
 	private A_Command createRoundhouseCommand(String command) {
-		String[] commandArray = command.split("[()*'\"\\s]+");
+		String[] commandArray = command.split("[+/:()*'\"\\s]+");
 		A_Command commandType = null;
 		int i = 0;
 		CoordinatesWorld worldCoor = null;
 		String id = commandArray[0];
 		
 		if(commandArray[2].charAt(0) != '$'){
-			Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
-			Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
+			Latitude latitude = new Latitude(Integer.parseInt(commandArray[2]), Integer.parseInt(commandArray[3]), Double.parseDouble(commandArray[4]));
+			Longitude longitude = new Longitude(Integer.parseInt(commandArray[5]), Integer.parseInt(commandArray[6]), Double.parseDouble(commandArray[7]));
 			worldCoor = new CoordinatesWorld(latitude, longitude);
-			i = 6;
+			i = 5;
 		}
 		
 		else{
-			worldCoor = this.parserHelper.getReference(commandArray[3]);
+			worldCoor = this.parserHelper.getReference(commandArray[2].substring(1));
 		}
 		
 		CoordinatesDelta deltaOrigin = processDelta(commandArray, 5 + i);
 		
-		double aEntry = Double.parseDouble(commandArray[10 + i]);
+		double aEntry = Double.parseDouble(commandArray[9 + i]);
 		Angle angleEntry = new Angle(aEntry);
-		double aStart = Double.parseDouble(commandArray[12 + i]);
+		double aStart = Double.parseDouble(commandArray[11 + i]);
 		Angle angleStart = new Angle(aStart);
-		double aEnd = Double.parseDouble(commandArray[14 + i]);
+		double aEnd = Double.parseDouble(commandArray[13 + i]);
 		Angle angleEnd = new Angle(aEnd);
 		
-		int spurCount = Integer.parseInt(commandArray[16 + i]);
-		double spurLength = Double.parseDouble(commandArray[19 + i]);
-		double turntableLength = Double.parseDouble(commandArray[22 + i]);
+		int spurCount = Integer.parseInt(commandArray[15 + i]);
+		double spurLength = Double.parseDouble(commandArray[18 + i]);
+		double turntableLength = Double.parseDouble(commandArray[21 + i]);
 		
 		commandType = new CommandCreateTrackRoundhouse(id, worldCoor, deltaOrigin, angleEntry, angleStart, 
 													   angleEnd, spurCount,  spurLength,  turntableLength);
@@ -952,10 +953,10 @@ public class CommandParser
 	 */
 	
 	private void setCoordinatesWorldReference(String subCommand) {
-		String[] commandArray = subCommand.split("[()*'\"\\s]+");
+		String[] commandArray = subCommand.split("[+/()*'\"\\s]+");
 		String id = commandArray[0];
 		Latitude latitude = new Latitude(Integer.parseInt(commandArray[3]), Integer.parseInt(commandArray[4]), Double.parseDouble(commandArray[5]));
-		Longitude longitude = new Longitude(Integer.parseInt(commandArray[7]), Integer.parseInt(commandArray[8]), Double.parseDouble(commandArray[9]));
+		Longitude longitude = new Longitude(Integer.parseInt(commandArray[6]), Integer.parseInt(commandArray[7]), Double.parseDouble(commandArray[8]));
 		CoordinatesWorld coordinates = new CoordinatesWorld(latitude, longitude);
 		this.parserHelper.addReference(id, coordinates);
 		
