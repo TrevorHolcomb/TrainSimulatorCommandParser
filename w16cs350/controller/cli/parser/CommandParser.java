@@ -239,7 +239,6 @@ public class CommandParser
    /*
     * @Author Marco Karier
     * @param subCoomand with out the intial word
-    *
     *This Method is called after the first word is DO
     */
    private A_Command createBehavioralCommand(String subCommand)
